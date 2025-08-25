@@ -1,4 +1,5 @@
 .idea
 *.iml
 *.csv
-자기소개서/*
+input/*
+output/*

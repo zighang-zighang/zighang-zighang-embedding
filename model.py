@@ -1,11 +1,10 @@
 import logging
-from dataclasses import dataclass
-from enum import Enum
-from typing import Optional
-
 import numpy as np
 import torch
+from dataclasses import dataclass
+from enum import Enum
 from transformers import AutoModel, AutoTokenizer
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -137,3 +136,32 @@ class KoreanEmbedding:
                 embedding = torch.nn.functional.normalize(embedding.unsqueeze(0), p=2, dim=1)[0]
 
         return embedding.cpu().numpy()
+
+
+if __name__ == "__main__":
+    import os
+    import glob
+    from pathlib import Path
+    from tqdm import tqdm
+
+    logging.basicConfig(level=logging.INFO)
+
+    input_dir = "input"
+    output_dir = "output"
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    embedding_model = KoreanEmbedding()
+
+    txt_files = glob.glob(os.path.join(input_dir, "*.txt"))
+
+    for txt_file in tqdm(txt_files, desc="Processing files", unit="file"):
+        with open(txt_file, 'r', encoding='utf-8') as f:
+            text = f.read().strip()
+
+        embedding = embedding_model.encode(text)
+
+        filename = Path(txt_file).stem
+        output_file = os.path.join(output_dir, f"{filename}.npy")
+
+        np.save(output_file, embedding)
