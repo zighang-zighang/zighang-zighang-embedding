@@ -146,22 +146,13 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
 
-    input_dir = "input"
-    output_dir = "output"
-
-    os.makedirs(output_dir, exist_ok=True)
-
     embedding_model = KoreanEmbedding()
 
-    txt_files = glob.glob(os.path.join(input_dir, "*.txt"))
+    if not os.path.exists('./output'):
+        os.makedirs('./output')
 
-    for txt_file in tqdm(txt_files, desc="Processing files", unit="file"):
-        with open(txt_file, 'r', encoding='utf-8') as f:
-            text = f.read().strip()
-
-        embedding = embedding_model.encode(text)
-
-        filename = Path(txt_file).stem
-        output_file = os.path.join(output_dir, f"{filename}.npy")
-
-        np.save(output_file, embedding)
+    for path in tqdm(glob.glob('./input/*.txt'), desc="Processing files", unit="file"):
+        with open(path, 'r', encoding='utf-8') as f:
+            embedding = embedding_model.encode(f.read())
+            output_file = os.path.join(f'./output/{Path(path).stem}.npy')
+            np.save(output_file, embedding)

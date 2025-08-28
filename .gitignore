@@ -3,3 +3,5 @@
 *.csv
 input/*
 output/*
+.env
+test.pdf
